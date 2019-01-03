@@ -4,9 +4,41 @@ import (
 	"./types"
 	"encoding/json"
 	"net/http"
+	"github.com/SalahEddineBC/api"
+	"context"
+	"time"
 	
 	"github.com/graphql-go/graphql"
 )
+
+//Creating our possible query structure
+var releaseNote = graphql.NewObject(graphql.ObjectConfig{
+	Name: "releaseNote",
+	Fields: graphql.Fields{
+		"date"        : &graphql.Field{ Type : graphql.String},
+		"product"     : &graphql.Field{ Type : graphql.String},
+		"tagline"     : &graphql.Field{ Type : graphql.String},
+		"text"        : &graphql.Field{ Type : graphql.String},
+		"product_lead": &graphql.Field{ Type : graphql.String},
+			
+		},
+	},
+)
+var rootQuery = graphql.NewObject(graphql.ObjectConfig{
+	Name: "Query",
+	Fields: graphql.Fields{
+		"getReleaseNotes" : &graphql.Field{ 
+		Type : graphql.NewList(releaseNote),
+		Resolve: func(params graphql.ResolveParams) (interface{}, error) {
+            ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	        defer cancel()
+	        r, err := c.GetReleaseNotes(ctx, &api.Empty{})
+
+	  	},
+		},
+	},
+})
+
 var schema, _ = graphql.NewSchema(graphql.SchemaConfig{ //Defining our graphql shema which contains our Query structure
 
     Query: rootQuery,
