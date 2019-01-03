@@ -1,7 +1,6 @@
 package main
 
 import (
-	"./types"
 	"encoding/json"
 	"net/http"
 	"github.com/SalahEddineBC/api"
