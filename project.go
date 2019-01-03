@@ -3,14 +3,19 @@ package main
 import (
 	"encoding/json"
 	"net/http"
-	"github.com/SalahEddineBC/api"
 	"context"
 	"time"
-	
+ 
+	"github.com/SalahEddineBC/api"
+	"github.com/SalahEddineBC/client"
 	"github.com/graphql-go/graphql"
 )
 
-//Creating our possible query structure
+const (
+	address = "localhost:8080"
+)
+
+
 var releaseNote = graphql.NewObject(graphql.ObjectConfig{
 	Name: "releaseNote",
 	Fields: graphql.Fields{
@@ -23,6 +28,7 @@ var releaseNote = graphql.NewObject(graphql.ObjectConfig{
 		},
 	},
 )
+//Creating our possible query structure
 var rootQuery = graphql.NewObject(graphql.ObjectConfig{
 	Name: "Query",
 	Fields: graphql.Fields{
@@ -31,7 +37,7 @@ var rootQuery = graphql.NewObject(graphql.ObjectConfig{
 		Resolve: func(params graphql.ResolveParams) (interface{}, error) {
             ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	        defer cancel()
-	        r, err := c.GetReleaseNotes(ctx, &api.Empty{})
+	        r, err := c.Client.GetReleaseNotes(ctx, &api.Empty{})
 
 	  	},
 		},
@@ -60,7 +66,8 @@ func resolve(query string, shema graphql.Schema) *graphql.Result {
 
 
 func main() {
-   
+	var c := client.Client{}
+	c, err := client.NewClient(address) //creating a new client
 	http.HandleFunc("/graphql", func(res http.ResponseWriter, req *http.Request) {
 		var q QueryS
 		if req.Method == "Post" {
